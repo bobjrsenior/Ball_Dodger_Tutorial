@@ -250,6 +250,7 @@ public class Enemy_Controller : MonoBehaviour {
                 Game_Controller.gameController.addToPool(this);
                 gameObject.SetActive(false);
             }
+            //Avoids trying to access a deleted game object
             if (!Game_Controller.lost)
             {
                 Vector2 dir = ((Vector2)Game_Controller.gameController.player.position - (Vector2)transform.position).normalized;
