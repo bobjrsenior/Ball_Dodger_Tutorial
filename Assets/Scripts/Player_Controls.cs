@@ -21,6 +21,7 @@ public class Player_Controls : MonoBehaviour {
     // Use this for initialization
     void Start () {
         movementSpeed = 5.0f;
+        //y * aspect ratio
         halfWindowSize.x = halfWindowSize.y * Screen.width / Screen.height;
     }
 	
@@ -28,7 +29,10 @@ public class Player_Controls : MonoBehaviour {
 	void Update () {
         if (!Game_Controller.lost)
         {
+            //Move depending on input
             transform.Translate(Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime, Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime, 0);
+
+            //Keep the player withing the window
             if (Mathf.Abs(transform.position.x) > halfWindowSize.x)
             {
                 transform.position = new Vector2(Mathf.Sign(transform.position.x) * halfWindowSize.x, transform.position.y);

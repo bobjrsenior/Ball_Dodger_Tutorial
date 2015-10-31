@@ -34,26 +34,31 @@ public class Enemy_Controller : MonoBehaviour {
     /// </summary>
     public Vector2 halfWindowSize;
 
-    public void setUpEnemy(EnemyType type, float winSize, int wave)
+    /// <summary>
+    /// Called in order to get an Enemy ready for battle
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="winSize"></param>
+    /// <param name="wave"></param>
+    public void setUpEnemy(EnemyType type, int wave, Vector2 winSize)
     {
-        halfWindowSize.x = winSize;
-        halfWindowSize.y = 4.85f;
+        halfWindowSize = winSize;
         dir = Random.Range(0, 4);
         if(dir == (int)SpawnDirection.North)
         {
-            transform.position = new Vector2(Random.Range(-winSize - 0.25f, winSize - 0.25f), Random.Range(-7.0f, -6.0f));
+            transform.position = new Vector2(Random.Range(-halfWindowSize.x - 0.25f, halfWindowSize.x - 0.25f), Random.Range(-7.0f, -6.0f));
         }
         else if (dir == (int)SpawnDirection.South)
         {
-            transform.position = new Vector2(Random.Range(-winSize + 0.25f, winSize - 0.25f), Random.Range(6.0f, 7.0f));
+            transform.position = new Vector2(Random.Range(-halfWindowSize.x + 0.25f, halfWindowSize.x - 0.25f), Random.Range(6.0f, 7.0f));
         }
         if (dir == (int)SpawnDirection.East)
         {
-            transform.position = new Vector2(Random.Range(-winSize - 2, -winSize - 1), Random.Range(-4.75f, 4.75f));
+            transform.position = new Vector2(Random.Range(-halfWindowSize.x - 2, -halfWindowSize.x - 1), Random.Range(-halfWindowSize.y + 0.1f, halfWindowSize.y - 0.1f));
         }
         else if (dir == (int)SpawnDirection.West)
         {
-            transform.position = new Vector2(Random.Range(winSize + 1, winSize + 2), Random.Range(-4.75f, 4.75f));
+            transform.position = new Vector2(Random.Range(halfWindowSize.x + 1, halfWindowSize.x + 2), Random.Range(-halfWindowSize.y + 0.1f, halfWindowSize.y - 0.1f));
         }
 
         movementSpeed = Random.Range(1.0f, 4.0f + (wave * .5f));

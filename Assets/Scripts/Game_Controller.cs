@@ -26,16 +26,31 @@ public class Game_Controller : MonoBehaviour {
     /// </summary>
     public Text waveUI;
 
+    /// <summary>
+    /// Shows your game/overall best wave during a run (part of game over screen)
+    /// </summary>
     public Text waveStatsUI;
 
+    /// <summary>
+    /// Shows your game/overall best play time during a run (part of game over screen)
+    /// </summary>
     public Text timeStatsUI;
 
+    /// <summary>
+    /// The canvas containing the game over screen (de/activated when needed)
+    /// </summary>
     public GameObject gameOverCanvas;
 
     /////Variables
 
+    /// <summary>
+    /// Stores the current best wave to avoid unecasarily accessing playerprefs
+    /// </summary>
     int curBestWave;
 
+    /// <summary>
+    /// Stores the current best play time to avoid unecasaarily accessing playerprefs
+    /// </summary>
     float curBestTime;
 
     /// <summary>
@@ -92,17 +107,27 @@ public class Game_Controller : MonoBehaviour {
 
     void Awake()
     {
-        gameController = this;
-        lost = false;
+        //Seed the random
         Random.seed = (int)System.DateTime.Now.Ticks;
+
+        //Set the static reference to this object
+        gameController = this;
+
+        //Since lost is static, it needs its value reset every game
+        lost = false;
+
+        //Make sure the game over ui isn't showing
         gameOverCanvas.SetActive(false);
     }
 
     // Use this for initialization
     void Start () {
+        //Store the highscore so you only need to access them when you get a new highscore
+        //Instead of every game
         curBestWave = getHighestWave();
         curBestTime = getHighestTime();
 
+        //Get the bounds for the game
         halfWindowSize.y = 4.85f;
         halfWindowSize.x = halfWindowSize.y * Screen.width / Screen.height;
         increaseWave();
@@ -110,20 +135,25 @@ public class Game_Controller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+        //If we haven't lost
         if (!lost)
         {
+            //Update playTimeUI
             playTime += Time.fixedDeltaTime;
             playTimeUI.text = "Time: " + (int)playTime;
 
+            //Is it time to go to the next wave?
             timeTilNextWave -= Time.fixedDeltaTime;
             if (timeTilNextWave <= 0)
             {
                 increaseWave();
             }
 
+            //Can we try to spawn?
             spawnTimer += Time.fixedDeltaTime;
             if (spawnTimer >= minSpawnDelay)
             {
+                //Add a bit of random to when enemies spawn
                 if (Random.Range(0.0f, 1.0f) > chanceToSpawn)
                 {
                     spawnTimer = 0;
@@ -133,6 +163,9 @@ public class Game_Controller : MonoBehaviour {
         }
 	}
 
+    /// <summary>
+    /// Go to the next wave and change variables where necasary
+    /// </summary>
     public void increaseWave()
     {
         //Update all of the spawn/level related variables
@@ -143,6 +176,10 @@ public class Game_Controller : MonoBehaviour {
         waveUI.text = "Wave: " + wave;
     }
 
+    /// <summary>
+    /// Adds an Enemy to the Enemy pool
+    /// </summary>
+    /// <param name="enemy"></param>
     public void addToPool(Enemy_Controller enemy)
     {
         if(head == null)
@@ -157,6 +194,10 @@ public class Game_Controller : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Spawns an enemy
+    /// Uses the Enemy Pool, if it isn't empty (head != null)
+    /// </summary>
     private void spawnEnemy()
     {
         Enemy_Controller enemyToSpawn;
@@ -171,31 +212,36 @@ public class Game_Controller : MonoBehaviour {
         {
             enemyToSpawn = (Instantiate(EnemyPrefab, transform.position, Quaternion.identity) as GameObject).GetComponent<Enemy_Controller>();
         }
-        enemyToSpawn.setUpEnemy(Enemy_Controller.EnemyType.Simple, halfWindowSize.x, wave);
+        enemyToSpawn.setUpEnemy(Enemy_Controller.EnemyType.Simple, wave, halfWindowSize);
 
     }
 
+    /// <summary>
+    /// Called when the game has been lost
+    /// Checks for highscores and sets up the game over UI
+    /// </summary>
     public void lostGame()
     {
         lost = true;
         gameOverCanvas.SetActive(true);
         waveStatsUI.text = "Wave: " + wave;
         timeStatsUI.text = "Time: " + (int) (playTime * 100) / 100.0f;
-        bool bestWave = storeHighestWave();
-        bool bestTime = storeHighestTime();
-        if (bestWave)
+        if (wave > curBestWave)
         {
             waveStatsUI.text += "\nBest: " + wave + "\nNew Best";
             curBestWave = wave;
+            storeHighestWave();
         }
         else
         {
             waveStatsUI.text += "\nBest: " + curBestWave;
         }
-        if (bestTime)
+        if (playTime > curBestTime)
         {
             timeStatsUI.text += "\nBest: " + ((int)(playTime * 100) / 100.0f) + "\nNew Best";
             curBestTime = playTime;
+            storeHighestTime();
+            PlayerPrefs.Save();
         }
         else
         {
@@ -214,26 +260,14 @@ public class Game_Controller : MonoBehaviour {
     }
 
 
-    bool storeHighestWave()
+    void storeHighestWave()
     {
-        int oldWave = PlayerPrefs.GetInt("wave", 0);
-        if (wave > oldWave)
-        {
-            PlayerPrefs.SetInt("wave", wave);
-            return true;
-        }
-        return false;
+        PlayerPrefs.SetInt("wave", wave);
     }
 
-    bool storeHighestTime()
+    void storeHighestTime()
     {
-        float oldTime = PlayerPrefs.GetFloat("time", 0);
-        if (playTime > oldTime)
-        {
-            PlayerPrefs.SetFloat("time", playTime);
-            return true;
-        }
-        return false;
+        PlayerPrefs.SetFloat("time", playTime);
     }
 
     int getHighestWave()
