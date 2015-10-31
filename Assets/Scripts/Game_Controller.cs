@@ -4,6 +4,11 @@ using UnityEngine.UI;
 
 public class Game_Controller : MonoBehaviour {
 
+    /// <summary>
+    /// Static reference to this script for easy access by other scripts
+    /// </summary>
+    public static Game_Controller gameController;
+
     ////Game Object and Componenet References
 
     /// <summary>
@@ -21,7 +26,18 @@ public class Game_Controller : MonoBehaviour {
     /// </summary>
     public Text waveUI;
 
+    public Text waveStatsUI;
+
+    public Text timeStatsUI;
+
+    public GameObject gameOverCanvas;
+
     /////Variables
+
+    /// <summary>
+    /// Has the player lost the game?
+    /// </summary>
+    public static bool lost;
 
     /// <summary>
     /// Holds how long you have been alive
@@ -58,12 +74,12 @@ public class Game_Controller : MonoBehaviour {
     /// <summary>
     /// The head of a Linked List used for object pooling
     /// </summary>
-    private static Enemy_Controller head = null;
+    private Enemy_Controller head = null;
 
     /// <summary>
     /// The tail of a Linked List used for object pooling
     /// </summary>
-    private static Enemy_Controller tail = null;
+    private Enemy_Controller tail = null;
 
     /// <summary>
     /// Holds half of the Windows size in Unity Units for bounds checking
@@ -72,7 +88,10 @@ public class Game_Controller : MonoBehaviour {
 
     void Awake()
     {
+        gameController = this;
+        lost = false;
         Random.seed = (int)System.DateTime.Now.Ticks;
+        gameOverCanvas.SetActive(false);
     }
 
     // Use this for initialization
@@ -84,25 +103,27 @@ public class Game_Controller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        playTime += Time.fixedDeltaTime;
-        playTimeUI.text = "Time: " + (int) playTime;
-
-        timeTilNextWave -= Time.fixedDeltaTime;
-        if(timeTilNextWave <= 0)
+        if (!lost)
         {
-            increaseWave();
-        }
+            playTime += Time.fixedDeltaTime;
+            playTimeUI.text = "Time: " + (int)playTime;
 
-        spawnTimer += Time.fixedDeltaTime;
-        if(spawnTimer >= minSpawnDelay)
-        {
-            if(Random.Range(0.0f, 1.0f) > chanceToSpawn)
+            timeTilNextWave -= Time.fixedDeltaTime;
+            if (timeTilNextWave <= 0)
             {
-                spawnTimer = 0;
-                spawnEnemy();
+                increaseWave();
+            }
+
+            spawnTimer += Time.fixedDeltaTime;
+            if (spawnTimer >= minSpawnDelay)
+            {
+                if (Random.Range(0.0f, 1.0f) > chanceToSpawn)
+                {
+                    spawnTimer = 0;
+                    spawnEnemy();
+                }
             }
         }
-
 	}
 
     public void increaseWave()
@@ -115,7 +136,7 @@ public class Game_Controller : MonoBehaviour {
         waveUI.text = "Wave: " + wave;
     }
 
-    public static void addToPool(Enemy_Controller enemy)
+    public void addToPool(Enemy_Controller enemy)
     {
         if(head == null)
         {
@@ -145,5 +166,23 @@ public class Game_Controller : MonoBehaviour {
         }
         enemyToSpawn.setUpEnemy(Enemy_Controller.EnemyType.Simple, halfWindowSize.x, wave);
 
+    }
+
+    public void lostGame()
+    {
+        lost = true;
+        gameOverCanvas.SetActive(true);
+        waveStatsUI.text = "Wave: " + wave;
+        timeStatsUI.text = "Time: " + (int) (playTime * 100) / 100.0f;
+    }
+
+    public void restartLevel()
+    {
+        Application.LoadLevel(1);
+    }
+
+    public void mainMenu()
+    {
+        Application.LoadLevel(0);
     }
 }

@@ -26,14 +26,17 @@ public class Player_Controls : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.Translate(Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime, Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime, 0);
-        if(Mathf.Abs(transform.position.x) > halfWindowSize.x)
+        if (!Game_Controller.lost)
         {
-            transform.position = new Vector2(Mathf.Sign(transform.position.x) * halfWindowSize.x, transform.position.y);
-        }
-        if (Mathf.Abs(transform.position.y) > halfWindowSize.y)
-        {
-            transform.position = new Vector2(transform.position.x, Mathf.Sign(transform.position.y) * halfWindowSize.y);
+            transform.Translate(Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime, Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime, 0);
+            if (Mathf.Abs(transform.position.x) > halfWindowSize.x)
+            {
+                transform.position = new Vector2(Mathf.Sign(transform.position.x) * halfWindowSize.x, transform.position.y);
+            }
+            if (Mathf.Abs(transform.position.y) > halfWindowSize.y)
+            {
+                transform.position = new Vector2(transform.position.x, Mathf.Sign(transform.position.y) * halfWindowSize.y);
+            }
         }
     }
 
@@ -41,5 +44,10 @@ public class Player_Controls : MonoBehaviour {
     {
         lives--;
         Destroy(other.gameObject);
+        if(lives <= 0)
+        {
+            Game_Controller.gameController.lostGame();
+            Destroy(gameObject);
+        }
     }
 }

@@ -72,7 +72,7 @@ public class Enemy_Controller : MonoBehaviour {
                     transform.Translate(0, movementSpeed * Time.deltaTime, 0);
                     if(transform.position.x > 1 + halfWindowSize.x)
                     {
-                        Game_Controller.addToPool(this);
+                        Game_Controller.gameController.addToPool(this);
                         gameObject.SetActive(false);
                     }
                     break;
@@ -80,7 +80,7 @@ public class Enemy_Controller : MonoBehaviour {
                     transform.Translate(0, -movementSpeed * Time.deltaTime, 0);
                     if (transform.position.x < -1 + halfWindowSize.x)
                     {
-                        Game_Controller.addToPool(this);
+                        Game_Controller.gameController.addToPool(this);
                         gameObject.SetActive(false);
                     }
                     break;
@@ -88,7 +88,7 @@ public class Enemy_Controller : MonoBehaviour {
                     transform.Translate(movementSpeed * Time.deltaTime, 0, 0);
                     if (transform.position.y > 1 + halfWindowSize.y)
                     {
-                        Game_Controller.addToPool(this);
+                        Game_Controller.gameController.addToPool(this);
                         gameObject.SetActive(false);
                     }
                     break;
@@ -96,7 +96,7 @@ public class Enemy_Controller : MonoBehaviour {
                     transform.Translate(-movementSpeed * Time.deltaTime, 0, 0);
                     if (transform.position.y < -1 - halfWindowSize.x)
                     {
-                        Game_Controller.addToPool(this);
+                        Game_Controller.gameController.addToPool(this);
                         gameObject.SetActive(false);
                     }
                     break;
