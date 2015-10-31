@@ -41,6 +41,11 @@ public class Game_Controller : MonoBehaviour {
     private float minSpawnDelay = 1.0f;
 
     /// <summary>
+    /// How long has it been since a spawn
+    /// </summary>
+    private float spawnTimer = 0.0f;
+
+    /// <summary>
     /// The odds of spawning a ball in a current from (excluding minSpawnDelay)
     /// </summary>
     private float chanceToSpawn = 0.8f;
@@ -53,25 +58,28 @@ public class Game_Controller : MonoBehaviour {
     /// <summary>
     /// The head of a Linked List used for object pooling
     /// </summary>
-    private Enemy_Controller head = null;
+    private static Enemy_Controller head = null;
 
     /// <summary>
     /// The tail of a Linked List used for object pooling
     /// </summary>
-    private Enemy_Controller tail = null;
+    private static Enemy_Controller tail = null;
 
-	// Use this for initialization
-	void Start () {
+    /// <summary>
+    /// Holds half of the Windows size in Unity Units for bounds checking
+    /// </summary>
+    private Vector2 halfWindowSize;
+
+    void Awake()
+    {
+        Random.seed = (int)System.DateTime.Now.Ticks;
+    }
+
+    // Use this for initialization
+    void Start () {
+        halfWindowSize.y = 4.85f;
+        halfWindowSize.x = halfWindowSize.y * Screen.width / Screen.height;
         increaseWave();
-        Enemy_Controller test = (Instantiate(EnemyPrefab, new Vector3(3, 3, 0), Quaternion.identity) as GameObject).GetComponent<Enemy_Controller>();
-        test.gameObject.SetActive(false);
-        addToPool(test);
-        test = (Instantiate(EnemyPrefab, transform.position, Quaternion.identity) as GameObject).GetComponent<Enemy_Controller>();
-        test.gameObject.SetActive(false);
-        addToPool(test);
-
-        spawnEnemy();
-        spawnEnemy();
     }
 	
 	// Update is called once per frame
@@ -84,6 +92,17 @@ public class Game_Controller : MonoBehaviour {
         {
             increaseWave();
         }
+
+        spawnTimer += Time.fixedDeltaTime;
+        if(spawnTimer >= minSpawnDelay)
+        {
+            if(Random.Range(0.0f, 1.0f) > chanceToSpawn)
+            {
+                spawnTimer = 0;
+                spawnEnemy();
+            }
+        }
+
 	}
 
     public void increaseWave()
@@ -96,7 +115,7 @@ public class Game_Controller : MonoBehaviour {
         waveUI.text = "Wave: " + wave;
     }
 
-    public void addToPool(Enemy_Controller enemy)
+    public static void addToPool(Enemy_Controller enemy)
     {
         if(head == null)
         {
@@ -115,7 +134,6 @@ public class Game_Controller : MonoBehaviour {
         Enemy_Controller enemyToSpawn;
         if(head != null)
         {
-            print("Found in pool");
             head.gameObject.SetActive(true);
             enemyToSpawn = head;
             head = head.next;
@@ -125,7 +143,7 @@ public class Game_Controller : MonoBehaviour {
         {
             enemyToSpawn = (Instantiate(EnemyPrefab, transform.position, Quaternion.identity) as GameObject).GetComponent<Enemy_Controller>();
         }
-
+        enemyToSpawn.setUpEnemy(Enemy_Controller.EnemyType.Simple, halfWindowSize.x, wave);
 
     }
 }
