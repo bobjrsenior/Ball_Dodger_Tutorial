@@ -17,7 +17,7 @@ public class Enemy_Controller : MonoBehaviour {
     /// <summary>
     /// Holds the different types of enemies
     /// </summary>
-    public enum EnemyType { Simple, Sin, Traveler};
+    public enum EnemyType { Simple, Sin, Traveler, Chaser};
 
     /// <summary>
     /// Directions the enemy could face on spawn
@@ -102,6 +102,13 @@ public class Enemy_Controller : MonoBehaviour {
             extraInfo = new Vector2(Random.Range(-halfWindowSize.x, halfWindowSize.x), Random.Range(-halfWindowSize.y, halfWindowSize.y));
             timer = Random.Range(3.0f, 5.0f + (wave * 0.5f));
             StartCoroutine(travelerEnemyUpdate());
+        }
+        else if (type == EnemyType.Chaser)
+        {
+            movementSpeed = Random.Range(0.5f, 2.5f);
+            spriteRenderer.color = Color.magenta;
+            timer = Random.Range(5.0f, 8.0f + (wave * 0.4f));
+            StartCoroutine(chaserEnemyUpdate());
         }
     }
 
@@ -203,7 +210,7 @@ public class Enemy_Controller : MonoBehaviour {
     }
 
     /// <summary>
-    /// The TrevelerEnemy to random locations
+    /// The TravelerEnemy moves to random locations
     /// This Enemy dies after a set lifetime
     /// </summary>
     /// <returns></returns>
@@ -217,12 +224,37 @@ public class Enemy_Controller : MonoBehaviour {
                 Game_Controller.gameController.addToPool(this);
                 gameObject.SetActive(false);
             }
-            if(Vector2.Distance(transform.position, extraInfo) < 1.0f)
+            Vector2 dir = (extraInfo - (Vector2)transform.position);
+            if (dir.sqrMagnitude < 1.0f)
             {
                 extraInfo = new Vector2(Random.Range(-halfWindowSize.x, halfWindowSize.x), Random.Range(-halfWindowSize.y, halfWindowSize.y));
             }
-            Vector2 dir = (extraInfo - (Vector2)transform.position).normalized;
+            dir.Normalize();
             transform.Translate(dir.x * movementSpeed * Time.deltaTime, dir.y * movementSpeed * Time.deltaTime, 0);
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// The ChaserEnemy towards the player
+    /// This Enemy dies after a set lifetime
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator chaserEnemyUpdate()
+    {
+        while (true)
+        {
+            timer -= Time.deltaTime;
+            if (timer <= 0)
+            {
+                Game_Controller.gameController.addToPool(this);
+                gameObject.SetActive(false);
+            }
+            if (!Game_Controller.lost)
+            {
+                Vector2 dir = ((Vector2)Game_Controller.gameController.player.position - (Vector2)transform.position).normalized;
+                transform.Translate(dir.x * movementSpeed * Time.deltaTime, dir.y * movementSpeed * Time.deltaTime, 0);
+            }
             yield return null;
         }
     }

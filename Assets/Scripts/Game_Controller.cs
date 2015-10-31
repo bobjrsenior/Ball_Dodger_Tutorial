@@ -12,6 +12,11 @@ public class Game_Controller : MonoBehaviour {
     ////Game Object and Componenet References
 
     /// <summary>
+    /// Links to the player's transform component
+    /// </summary>
+    public Transform player;
+
+    /// <summary>
     /// Links to an Enemy prefab to spawn
     /// </summary>
     public GameObject EnemyPrefab;
@@ -71,7 +76,7 @@ public class Game_Controller : MonoBehaviour {
     /// <summary>
     /// Holds what wave you are currently on
     /// </summary>
-    private int wave = 0;
+    private int wave = 7;
 
     /////Spawning Related Variables
 
@@ -233,16 +238,36 @@ public class Game_Controller : MonoBehaviour {
                 type = Enemy_Controller.EnemyType.Sin;
             }
         }
-        else
+        else if(wave < 7)
         {
             int temp = (int)Random.Range(0.0f, 2.25f + (0.2f * (wave - 2)));
             if (temp == 1)
             {
                 type = Enemy_Controller.EnemyType.Sin;
             }
-            if (temp == 2)
+           else if (temp == 2)
             {
                 type = Enemy_Controller.EnemyType.Traveler;
+            }
+        }
+        else
+        {
+            int temp = (int)Random.Range(0.0f, 3.25f + (0.2f * (wave - 7)));
+            if(temp > 3)
+            {
+                temp = (wave * temp) % 4; 
+            }
+            if (temp == 1)
+            {
+                type = Enemy_Controller.EnemyType.Sin;
+            }
+            else if (temp == 2)
+            {
+                type = Enemy_Controller.EnemyType.Traveler;
+            }
+            else if (temp == 3)
+            {
+                type = Enemy_Controller.EnemyType.Chaser;
             }
         }
         enemyToSpawn.setUpEnemy(type, wave, halfWindowSize);
