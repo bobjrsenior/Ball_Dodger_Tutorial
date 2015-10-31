@@ -179,7 +179,7 @@ public class Game_Controller : MonoBehaviour {
     /// <summary>
     /// Adds an Enemy to the Enemy pool
     /// </summary>
-    /// <param name="enemy"></param>
+    /// <param name="enemy">The Enemy object to add to the Enemy pool</param>
     public void addToPool(Enemy_Controller enemy)
     {
         if(head == null)

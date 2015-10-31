@@ -37,9 +37,9 @@ public class Enemy_Controller : MonoBehaviour {
     /// <summary>
     /// Called in order to get an Enemy ready for battle
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="winSize"></param>
-    /// <param name="wave"></param>
+    /// <param name="type">What type of enemy will this be (Stored in EnemyType enum)</param>
+    /// <param name="winSize">Size of the window to determine spawn locations</param>
+    /// <param name="wave">What wave is the game currently on?</param>
     public void setUpEnemy(EnemyType type, int wave, Vector2 winSize)
     {
         halfWindowSize = winSize;
@@ -68,6 +68,11 @@ public class Enemy_Controller : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// The SimpleEnemy just moves stright in one directiont (North, South, East, West)
+    /// Once at the other end of the screen, it adds itself to the Enemy pool and deactivates
+    /// </summary>
+    /// <returns></returns>
     IEnumerator simpleEnemyUpdate()
     {
         while (true) {
