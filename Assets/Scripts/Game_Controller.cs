@@ -34,6 +34,10 @@ public class Game_Controller : MonoBehaviour {
 
     /////Variables
 
+    int curBestWave;
+
+    float curBestTime;
+
     /// <summary>
     /// Has the player lost the game?
     /// </summary>
@@ -96,6 +100,9 @@ public class Game_Controller : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        curBestWave = getHighestWave();
+        curBestTime = getHighestTime();
+
         halfWindowSize.y = 4.85f;
         halfWindowSize.x = halfWindowSize.y * Screen.width / Screen.height;
         increaseWave();
@@ -174,6 +181,26 @@ public class Game_Controller : MonoBehaviour {
         gameOverCanvas.SetActive(true);
         waveStatsUI.text = "Wave: " + wave;
         timeStatsUI.text = "Time: " + (int) (playTime * 100) / 100.0f;
+        bool bestWave = storeHighestWave();
+        bool bestTime = storeHighestTime();
+        if (bestWave)
+        {
+            waveStatsUI.text += "\nBest: " + wave + "\nNew Best";
+            curBestWave = wave;
+        }
+        else
+        {
+            waveStatsUI.text += "\nBest: " + curBestWave;
+        }
+        if (bestTime)
+        {
+            timeStatsUI.text += "\nBest: " + ((int)(playTime * 100) / 100.0f) + "\nNew Best";
+            curBestTime = playTime;
+        }
+        else
+        {
+            timeStatsUI.text += "\nBest: " + (int)(curBestTime * 100) / 100.0f; ;
+        }
     }
 
     public void restartLevel()
@@ -184,5 +211,38 @@ public class Game_Controller : MonoBehaviour {
     public void mainMenu()
     {
         Application.LoadLevel(0);
+    }
+
+
+    bool storeHighestWave()
+    {
+        int oldWave = PlayerPrefs.GetInt("wave", 0);
+        if (wave > oldWave)
+        {
+            PlayerPrefs.SetInt("wave", wave);
+            return true;
+        }
+        return false;
+    }
+
+    bool storeHighestTime()
+    {
+        float oldTime = PlayerPrefs.GetFloat("time", 0);
+        if (playTime > oldTime)
+        {
+            PlayerPrefs.SetFloat("time", playTime);
+            return true;
+        }
+        return false;
+    }
+
+    int getHighestWave()
+    {
+        return PlayerPrefs.GetInt("wave", 0);
+    }
+
+    float getHighestTime()
+    {
+        return PlayerPrefs.GetFloat("time", 0);
     }
 }
