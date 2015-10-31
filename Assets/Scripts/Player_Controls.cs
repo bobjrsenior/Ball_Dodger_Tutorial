@@ -23,6 +23,7 @@ public class Player_Controls : MonoBehaviour {
         movementSpeed = 5.0f;
         //y * aspect ratio
         halfWindowSize.x = halfWindowSize.y * Screen.width / Screen.height;
+        Game_Controller.gameController.updateLives(lives);
     }
 	
 	// Update is called once per frame
@@ -46,7 +47,7 @@ public class Player_Controls : MonoBehaviour {
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-        lives--;
+        Game_Controller.gameController.updateLives(--lives);
         Destroy(other.gameObject);
         if(lives <= 0)
         {

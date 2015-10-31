@@ -27,6 +27,11 @@ public class Game_Controller : MonoBehaviour {
     public Text waveUI;
 
     /// <summary>
+    /// References the UI object that will display your current lives
+    /// </summary>
+    public Text livesUI;
+
+    /// <summary>
     /// Shows your game/overall best wave during a run (part of game over screen)
     /// </summary>
     public Text waveStatsUI;
@@ -200,19 +205,47 @@ public class Game_Controller : MonoBehaviour {
     /// </summary>
     private void spawnEnemy()
     {
+        //Retrieve enemy to spawn
         Enemy_Controller enemyToSpawn;
+        //If the Enemy pool isn't empty, get it there
         if(head != null)
         {
             head.gameObject.SetActive(true);
             enemyToSpawn = head;
             head = head.next;
             enemyToSpawn.next = null;
-        }
+        }//Otherwise, make a new enemy
         else
         {
             enemyToSpawn = (Instantiate(EnemyPrefab, transform.position, Quaternion.identity) as GameObject).GetComponent<Enemy_Controller>();
         }
-        enemyToSpawn.setUpEnemy(Enemy_Controller.EnemyType.Simple, wave, halfWindowSize);
+        Enemy_Controller.EnemyType type = Enemy_Controller.EnemyType.Simple;
+        //Determine the Enemy type
+        if(wave == 1)
+        {
+            type = Enemy_Controller.EnemyType.Simple;
+        }
+        else if(wave < 4)
+        {
+            int temp = (int)Mathf.Round(Random.Range(0.0f, 0.6f + (0.2f * (wave - 2))));
+            if(temp == 1)
+            {
+                type = Enemy_Controller.EnemyType.Sin;
+            }
+        }
+        else
+        {
+            int temp = (int)Random.Range(0.0f, 2.25f + (0.2f * (wave - 2)));
+            if (temp == 1)
+            {
+                type = Enemy_Controller.EnemyType.Sin;
+            }
+            if (temp == 2)
+            {
+                type = Enemy_Controller.EnemyType.Traveler;
+            }
+        }
+        enemyToSpawn.setUpEnemy(type, wave, halfWindowSize);
 
     }
 
@@ -249,6 +282,16 @@ public class Game_Controller : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Updates the Lives_UI_Text
+    /// </summary>
+    public void updateLives(int lives)
+    {
+        livesUI.text = "Lives: " + lives;
+    }
+
+    /////UI Button Functions
+
     public void restartLevel()
     {
         Application.LoadLevel(1);
@@ -259,6 +302,8 @@ public class Game_Controller : MonoBehaviour {
         Application.LoadLevel(0);
     }
 
+
+    /////Stat Storage and Retreival
 
     void storeHighestWave()
     {
