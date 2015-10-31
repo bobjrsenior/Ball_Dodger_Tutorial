@@ -16,7 +16,6 @@ public class Player_Controls : MonoBehaviour {
     // Use this for initialization
     void Start () {
         movementSpeed = 5.0f;
-        print(((float)Screen.width) / Screen.height);
         halfWindowSize.x = halfWindowSize.y * Screen.width / Screen.height;
     }
 	
