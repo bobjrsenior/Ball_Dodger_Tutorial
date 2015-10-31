@@ -4,6 +4,11 @@ using System.Collections;
 public class Player_Controls : MonoBehaviour {
 
     /// <summary>
+    /// Number of time player can hit an enemy without dying
+    /// </summary>
+    public int lives = 3;
+    
+    /// <summary>
     /// How fast the player can move in units/second
     /// </summary>
     private float movementSpeed;
@@ -30,5 +35,11 @@ public class Player_Controls : MonoBehaviour {
         {
             transform.position = new Vector2(transform.position.x, Mathf.Sign(transform.position.y) * halfWindowSize.y);
         }
+    }
+
+    public void OnTriggerEnter2D(Collider2D other)
+    {
+        lives--;
+        Destroy(other.gameObject);
     }
 }
