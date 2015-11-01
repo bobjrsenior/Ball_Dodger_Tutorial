@@ -76,7 +76,7 @@ public class Game_Controller : MonoBehaviour {
     /// <summary>
     /// Holds what wave you are currently on
     /// </summary>
-    private int wave = 7;
+    private int wave = 0;
 
     /////Spawning Related Variables
 
@@ -182,8 +182,7 @@ public class Game_Controller : MonoBehaviour {
         timeTilNextWave = 15.0f + (wave * 1.5f);
         minSpawnDelay = 1.0f * (1.0f / (wave + 1));
         chanceToSpawn = 0.8f * (1.0f / ((0.25f * wave) + 1));
-        wave++;
-        waveUI.text = "Wave: " + wave;
+        waveUI.text = "Wave: " + ++wave;
     }
 
     /// <summary>

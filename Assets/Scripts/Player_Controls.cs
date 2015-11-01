@@ -6,7 +6,7 @@ public class Player_Controls : MonoBehaviour {
     /// <summary>
     /// Number of time player can hit an enemy without dying
     /// </summary>
-    public int lives = 3;
+    private int lives = 5;
     
     /// <summary>
     /// How fast the player can move in units/second
@@ -16,13 +16,17 @@ public class Player_Controls : MonoBehaviour {
     /// <summary>
     /// Holds half of the Windows size in Unity Units for bounds checking
     /// </summary>
-    public Vector2 halfWindowSize;
+    private Vector2 halfWindowSize;
 
     // Use this for initialization
     void Start () {
         movementSpeed = 5.0f;
+        //Slightly less than camera viewport (5)
+        halfWindowSize.y = 4.85f;
         //y * aspect ratio
         halfWindowSize.x = halfWindowSize.y * Screen.width / Screen.height;
+
+        //Mke sure the lives UI is displaying correctly
         Game_Controller.gameController.updateLives(lives);
     }
 	
