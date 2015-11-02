@@ -23,23 +23,37 @@ public class Main_Menu_Controller : MonoBehaviour {
 
     /////UI Button Functions
 
+    /// <summary>
+    /// Starts the game by loading the game scene
+    /// </summary>
     public void play()
     {
         Application.LoadLevel(1);
     }
 
+    /// <summary>
+    /// Quits the game
+    /// </summary>
     public void Quit()
     {
         Application.Quit();
     }
 
-    /////Stat Storage and Retreival
+    /////Stat Retreival
 
+    /// <summary>
+    /// Retrieve the best wave from the PlayerPrefs
+    /// </summary>
+    /// <returns>Highest wave achieved</returns>
     int getHighestWave()
     {
         return PlayerPrefs.GetInt("wave", 0);
     }
 
+    /// <summary>
+    /// Retrieve the best time from the PlayerPrefs
+    /// </summary>
+    /// <returns>Best time achieved</returns>
     float getHighestTime()
     {
         return PlayerPrefs.GetFloat("time", 0);

@@ -224,7 +224,7 @@ public class Game_Controller : MonoBehaviour {
             enemyToSpawn = (Instantiate(EnemyPrefab, transform.position, Quaternion.identity) as GameObject).GetComponent<Enemy_Controller>();
         }
         Enemy_Controller.EnemyType type = Enemy_Controller.EnemyType.Simple;
-        //Determine the Enemy type
+        //Determine the Enemy type based on wave number and a bit of randomness
         if(wave == 1)
         {
             type = Enemy_Controller.EnemyType.Simple;
@@ -269,6 +269,7 @@ public class Game_Controller : MonoBehaviour {
                 type = Enemy_Controller.EnemyType.Chaser;
             }
         }
+        //Setup the enemy and have it start
         enemyToSpawn.setUpEnemy(type, wave, halfWindowSize);
 
     }
@@ -280,28 +281,39 @@ public class Game_Controller : MonoBehaviour {
     public void lostGame()
     {
         lost = true;
+        //Show the game over screen
         gameOverCanvas.SetActive(true);
+        //Display what wave you were on and how long you survived
         waveStatsUI.text = "Wave: " + wave;
         timeStatsUI.text = "Time: " + (int) (playTime * 100) / 100.0f;
+
+        //If it was your highest wave
         if (wave > curBestWave)
         {
+            //Show that it was a new best and save the new record
             waveStatsUI.text += "\nBest: " + wave + "\nNew Best";
             curBestWave = wave;
             storeHighestWave();
         }
         else
         {
+            //Show the current record
             waveStatsUI.text += "\nBest: " + curBestWave;
         }
+        //If it was your best time
         if (playTime > curBestTime)
         {
+            //Show that it was a new best and save the new record
             timeStatsUI.text += "\nBest: " + ((int)(playTime * 100) / 100.0f) + "\nNew Best";
             curBestTime = playTime;
             storeHighestTime();
+            //Write PlayerPrefs to disk
+            //Not done if you get a best wave because you will always also get a best time
             PlayerPrefs.Save();
         }
         else
         {
+            //Show the current record
             timeStatsUI.text += "\nBest: " + (int)(curBestTime * 100) / 100.0f; ;
         }
     }
@@ -316,11 +328,17 @@ public class Game_Controller : MonoBehaviour {
 
     /////UI Button Functions
 
+    /// <summary>
+    /// Starts the game over by reloading the scene
+    /// </summary>
     public void restartLevel()
     {
         Application.LoadLevel(1);
     }
 
+    /// <summary>
+    /// Goes to the main menu by loading the main menu scene
+    /// </summary>
     public void mainMenu()
     {
         Application.LoadLevel(0);
@@ -329,21 +347,35 @@ public class Game_Controller : MonoBehaviour {
 
     /////Stat Storage and Retreival
 
+    /// <summary>
+    /// Stores the new highest wave
+    /// </summary>
     void storeHighestWave()
     {
         PlayerPrefs.SetInt("wave", wave);
     }
 
+    /// <summary>
+    /// Stores the new highest/best time
+    /// </summary>
     void storeHighestTime()
     {
         PlayerPrefs.SetFloat("time", playTime);
     }
 
+    /// <summary>
+    /// Retrieve the best wave from the PlayerPrefs
+    /// </summary>
+    /// <returns>Highest wave achieved</returns>
     int getHighestWave()
     {
         return PlayerPrefs.GetInt("wave", 0);
     }
 
+    /// <summary>
+    /// Retrieve the best time from the PlayerPrefs
+    /// </summary>
+    /// <returns>Best time achieved</returns>
     float getHighestTime()
     {
         return PlayerPrefs.GetFloat("time", 0);

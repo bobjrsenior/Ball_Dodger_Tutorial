@@ -51,6 +51,8 @@ public class Player_Controls : MonoBehaviour {
 
     public void OnTriggerEnter2D(Collider2D other)
     {
+        //Currently, the only thing the player can hit is the enemy
+        //Otherwise we woiuld need to add checks such as giving the enemy a certain tag in the editor
         Game_Controller.gameController.updateLives(--lives);
         Destroy(other.gameObject);
         if(lives <= 0)
